@@ -111,6 +111,6 @@ def getContractAbi(pqObj):
     return abi
 
 if __name__ == "__main__":
-    downloadContracts(1236, 1898)
+    downloadContracts(1, 1898)
     # getContractSolAbiBytecode('0xef8028b0e68eb6458bdb2c7ba39b39fefea02719')
 
