@@ -1,6 +1,11 @@
 """
                     ****  download contract from etherscan  ****
 contract containing source code, abi and bytecode will store in diretory:contractdata.
+    make sure that the following dirs have already been created
+    before run download_solidity_contract.py
+    ----download_solidity_contract.py
+    ----contractdata----abi
+                    ---sourcecode
     @ author : liuwang
     @ school : Wuhan University
     @ date   : 2018.10.22
@@ -12,6 +17,7 @@ import logging
 logging.basicConfig(level=logging.INFO, filename='./download.log',
                     format = '%(asctime)s - %(levelname)s - %(message)s',
                     filemode='a', datefmt='%Y-%m-%d%I:%M:%S %p')
+import os
 
 # https://etherscan.io/contractsVerified/<page_num>
 # 25 contracts each etherscan page, totally have 1898 pages in current time
@@ -105,6 +111,6 @@ def getContractAbi(pqObj):
     return abi
 
 if __name__ == "__main__":
-    downloadContracts(830, 1898)
+    downloadContracts(1236, 1898)
     # getContractSolAbiBytecode('0xef8028b0e68eb6458bdb2c7ba39b39fefea02719')
 
