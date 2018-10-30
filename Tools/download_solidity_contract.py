@@ -1,23 +1,27 @@
 """
                     ****  download contract from etherscan  ****
-contract containing source code, abi and bytecode will store in diretory:contractdata.
-    make sure that the following dirs have already been created
-    before run download_solidity_contract.py
-    ----download_solidity_contract.py
-    ----contractdata----abi
-                    ---sourcecode
+contract containing source code, abi and bytecode will store in diretory:contractdata
     @ author : liuwang
     @ school : Wuhan University
     @ date   : 2018.10.22
 """
 
+import os
 import requests
 from pyquery import PyQuery as pq
 import logging
+
+# config log file
 logging.basicConfig(level=logging.INFO, filename='./download.log',
                     format = '%(asctime)s - %(levelname)s - %(message)s',
                     filemode='a', datefmt='%Y-%m-%d%I:%M:%S %p')
-import os
+
+# print msg in console and log file
+def doLogging(msg):
+    print(msg)
+    logging.info(msg)
+    pass
+
 
 # https://etherscan.io/contractsVerified/<page_num>
 # 25 contracts each etherscan page, totally have 1898 pages in current time
@@ -33,6 +37,13 @@ SOURCECODE_DIR = "./contractdata/sourcecode/"
 # the diretory to store abi files
 ABI_DIR = "./contractdata/abi/"
 
+if not os.path.exists(SOURCECODE_DIR):
+    os.makedirs(SOURCECODE_DIR)
+    doLogging('create directory {}'.format(SOURCECODE_DIR))
+if not os.path.exists(ABI_DIR):
+    os.makedirs(ABI_DIR)
+    doLogging('create directory {}'.format(ABI_DIR))
+
 # single thread to download contracts from etherscan
 # and th page between page_from and page_to.
 def downloadContracts(page_from, page_to):
@@ -43,12 +54,10 @@ def downloadContracts(page_from, page_to):
                 try:
                     getCodeAndStore(addr)
                 except Exception as e:
-                    print(e)
-                    logging.warning(e)
+                    doLogging(e)
                     continue
         except Exception as e:
-            print(e)
-            logging.warning(e)
+            doLogging(e)
     pass
 
 # get the addresses from the page of page_num
@@ -61,11 +70,11 @@ def getContractAddressByPageNum(page_num):
         raise Exception("Connected EtherScan page {} error!".format(page_num))
     else:
         addrs = pqObj('.address-tag').text().split(' ')
-        logging.info('get Contract addresses in page {} Finished : '.format(page_num))
+        doLogging('get Contract addresses in page {} Finished : '.format(page_num))
         return addrs
     pass
 
-#　download source code , Abi json code, and bytecode
+# download source code , Abi json code, and bytecode
 def getCodeAndStore(addr):
     try:
         codeUrl = code_url_prefix + str(addr) + '#code'
@@ -86,8 +95,7 @@ def getCodeAndStore(addr):
         except Exception as e:
             raise Exception("Open or write file error!" + e.__str__())
         # Log in console and logfile
-        print('downloaded contract:{} at address:{}'.format(contractName, addr))
-        logging.info('downloaded contract:{} at address:{}'.format(contractName, addr))
+        doLogging('downloaded contract:{} at address:{}'.format(contractName, addr))
         pass
     pass
 
