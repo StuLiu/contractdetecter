@@ -12,7 +12,7 @@ from pyquery import PyQuery as pq
 import logging
 
 # config log file
-logging.basicConfig(level=logging.INFO, filename='./download.log',
+logging.basicConfig(level=logging.INFO, filename='./logs/download.log',
                     format = '%(asctime)s - %(levelname)s - %(message)s',
                     filemode='a', datefmt='%Y-%m-%d%I:%M:%S %p')
 
