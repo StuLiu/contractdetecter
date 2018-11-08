@@ -35,7 +35,7 @@ def __detectForLoapWithCall(sourceCode):
     faults = re.findall(pattern, sourceCode)
     for fault in faults:
         doLogging(fault)
-    return re.search(pattern, sourceCode) != None
+    return len(faults) > 0
 
 
 def detectAllForLoapWithCall():
