@@ -1,0 +1,32 @@
+2018-11-0810:53:04 PM - INFO - create directory ./tempFaultSol/DoSAttack
+2018-11-0810:53:04 PM - INFO - detectAllForLoapWithCall begin ......======================================
+2018-11-0810:53:04 PM - INFO - for (uint16 i = 0; i < connectorTokens.length; i++) {
+            connectorToken = connectorTokens[i];
+            connectorBalance = getConnectorBalance(connectorToken);
+            connectorAmount = safeMul(_amount, connectorBalance) / supply;
+
+            // update virtual balance if relevant
+            Connector storage connector = connectors[connectorToken];
+            if (connector.isVirtualBalanceEnabled)
+                connector.virtualBalance = safeSub(connector.virtualBalance, connectorAmount);
+
+            // transfer funds to the caller in the connector token
+            // the transfer might fail if the actual connector balance is smaller than the virtual balance
+            assert(connectorToken.transfer(msg.sender, connectorAmount));
+
+            // dispatch price data update for the smart token/connector
+            emit PriceDataUpdate(connectorToken, supply - _amount, connectorBalance - connectorAmount, connector.weight);
+        }
+2018-11-0810:53:04 PM - INFO - BancorXEnabledConverter.sol
+2018-11-0810:53:05 PM - INFO - for (uint i = 0; i < toAddressList.length; i++) {
+            toAddressList[i].transfer(amountList[i]);
+        }
+2018-11-0810:53:05 PM - INFO - GasManager.sol
+2018-11-0810:53:07 PM - INFO - for (uint256 i = 0; i < tokens.length; i++)
+        {
+            ERC20Basic token = ERC20Basic(tokens[i]);
+            uint256 balance = token.balanceOf(this);
+            token.transfer(owner, balance);
+        }
+2018-11-0810:53:07 PM - INFO - TrinoToken.sol
+2018-11-0810:53:07 PM - INFO - detectAllForLoapWithCall finish !!!!!======================================

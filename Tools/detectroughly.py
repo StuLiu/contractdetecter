@@ -5,7 +5,7 @@
     and the fault source file will store in 'tempFaultSol' directory
     @ author : liuwang
     @ school : Wuhan University
-    @ date   : 2018.10.22
+    @ date   : 2018.11.8
 """
 
 import re
@@ -43,6 +43,7 @@ def detectAllForLoapWithCall():
     sols = getDirOrFileName('./contractdata/sourcecode')
     faultFiles = []
     for filename in sols:
+        print(filename)
         try:
             with open('./contracttest/sourcecode/'+filename, encoding='utf-8' ) as file:
                 sourcecode = file.read()
