@@ -24,28 +24,45 @@ def doLogging(msg):
     logging.info(msg)
     pass
 
-OUTPUT_DIR_DoSAttack = './tempFaultSol/DoSAttack'
-if not os.path.exists(OUTPUT_DIR_DoSAttack):
-    os.makedirs(OUTPUT_DIR_DoSAttack)
-    doLogging('create directory {}'.format(OUTPUT_DIR_DoSAttack))
+SOURCECODE_DIR = './contractdata/sourcecode'
+# SOURCECODE_DIR = './contracttest/sourcecode'
 
-# detect call in for-loop, return 'true' if code has for loop with call
+OUTPUT_DIR_DoSAttack = './tempFaultSol/DoSAttack'
+OUTPUT_DIR_UexpectedEther = './tempFaultSol/UexpectedEther'
+OUTPUT_DIR_ImproperAccessControl = './tempFaultSol/ImproperAccessControl'
+def __checkDirAndCreate(path):
+    if not os.path.exists(path):
+        os.makedirs(path)
+        doLogging('create directory {}'.format(path))
+OUTPUT_DIRS = [OUTPUT_DIR_DoSAttack, OUTPUT_DIR_UexpectedEther, OUTPUT_DIR_ImproperAccessControl]
+for dir in OUTPUT_DIRS:
+    __checkDirAndCreate(dir)
+
+# detect call in for-loop, return 'true' if code has for loop with checked call
 def __detectForLoapWithCall(sourceCode):
-    pattern = re.compile(r'(for[ ]*?\([^\{]*?\{[^\}]*?(?:transfer|send|call)\(.*?\})', re.S)
+    pattern = re.compile(r'(for[ ]*?\([^\{]*?\{[^\}]*?(?:transfer|(?:require|assert)\([^\)]*?(?:send|call\..*?))\(.*?\})', re.S)
     faults = re.findall(pattern, sourceCode)
     for fault in faults:
-        doLogging(fault)
+        doLogging('Code here may be Error:\n\t' + fault)
     return len(faults) > 0
 
+# detect call in for-loop, return 'true' if code has for loop with checked call
+def __detectUexpectedEther(sourceCode):
+    pattern = re.compile(r'((?:(?:require|assert|if)\([^\)]*?(?:this\.|address\(this\)\.)balance[^\)]*?[><=]{1,}[^\)]*?\)|'
+                         r'(?:require|assert|if)\([^\)]*?[><=]{1,}[^\)]*?(?:this\.|address\(this\)\.)balance.*?\)))', re.S)
+    faults = re.findall(pattern, sourceCode)
+    for fault in faults:
+        doLogging('Code here may be Error:\n\t' + fault)
+    return len(faults) > 0
 
 def detectAllForLoapWithCall():
     doLogging('detectAllForLoapWithCall begin ......======================================')
-    sols = getDirOrFileName('./contractdata/sourcecode')
+    sols = getDirOrFileName(SOURCECODE_DIR)
     faultFiles = []
+    print(len(sols))
     for filename in sols:
-        print(filename)
         try:
-            with open('./contracttest/sourcecode/'+filename, encoding='utf-8' ) as file:
+            with open(os.path.join(SOURCECODE_DIR, filename), encoding='utf-8' ) as file:
                 sourcecode = file.read()
                 if __detectForLoapWithCall(sourcecode):
                     faultFiles.append(filename)
@@ -54,9 +71,31 @@ def detectAllForLoapWithCall():
             pass
     doLogging('detectAllForLoapWithCall finish !!!!!======================================')
     for filename in faultFiles:
-        shutil.copyfile('./contracttest/sourcecode/' + filename,
+        shutil.copyfile(os.path.join(SOURCECODE_DIR, filename),
                         os.path.join(OUTPUT_DIR_DoSAttack, filename))
     return faultFiles
 
+def detectAllUexpectedEther():
+    doLogging('detectAllUexpectedEther begin ......======================================')
+    sols = getDirOrFileName(SOURCECODE_DIR)
+    faultFiles = []
+    print(len(sols))
+    for filename in sols:
+        try:
+            with open(os.path.join(SOURCECODE_DIR, filename), encoding='utf-8' ) as file:
+                sourcecode = file.read()
+                if __detectUexpectedEther(sourcecode):
+                    faultFiles.append(filename)
+                    doLogging(filename)
+        except Exception:
+            pass
+    doLogging('detectAllUexpectedEther finish !!!!!======================================')
+    for filename in faultFiles:
+        shutil.copyfile(os.path.join(SOURCECODE_DIR, filename),
+                        os.path.join(OUTPUT_DIR_UexpectedEther, filename))
+    return faultFiles
+
+
 if __name__ == '__main__':
-    print(detectAllForLoapWithCall())
+    # doLogging(detectAllForLoapWithCall())
+    doLogging(detectAllUexpectedEther())
