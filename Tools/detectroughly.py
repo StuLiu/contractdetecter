@@ -40,7 +40,7 @@ for dir in OUTPUT_DIRS:
 
 # detect call in for-loop, return 'true' if code has for loop with checked call
 def __detectForLoapWithCall(sourceCode):
-    pattern = re.compile(r'(for[ ]*?\([^\{]*?\{[^\}]*?(?:transfer|(?:require|assert)\([^\)]*?(?:send|call\..*?))\(.*?\})', re.S)
+    pattern = re.compile(r'(for[ ]*?\([^\{]*?\{[^\}]*?(?:\.transfer|(?:require|assert)\([^\)]*?(?:\.send|\.call\..*?))\(.*?\})', re.S)
     faults = re.findall(pattern, sourceCode)
     for fault in faults:
         doLogging('Code here may be Error:\n\t' + fault)
@@ -97,5 +97,5 @@ def detectAllUexpectedEther():
 
 
 if __name__ == '__main__':
-    # doLogging(detectAllForLoapWithCall())
+    doLogging(detectAllForLoapWithCall())
     doLogging(detectAllUexpectedEther())
